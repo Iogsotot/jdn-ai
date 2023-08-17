@@ -5,9 +5,9 @@ import { MaxGenerationTime } from "../../../app/types/mainSlice.types";
 import { RootState } from "../../../app/store/store";
 import { runCssSelectorGeneration } from "../utils/runCssSelectorGeneration";
 import { updateLocatorGroup } from "../locators.slice";
-import { selectCurrentPageObject } from "../../pageObjects/selectors/pageObjects.selectors";
+import { selectCurrentPageObject, selectLastElementLibrary } from "../../pageObjects/selectors/pageObjects.selectors";
 import { filterLocatorsByClassFilter } from "../utils/filterLocators";
-import { selectClassFilterByPO } from "../../filter/filter.selectors";
+import { LocalStorageKey, getLocalStorage } from "../../../common/utils/localStorage";
 
 interface Meta {
   locators: Locator[];
@@ -25,17 +25,26 @@ export const runLocatorsGeneration = createAsyncThunk(
   "locators/runLocatorsGeneration",
   async (meta: Meta, thunkAPI) => {
     const state = thunkAPI.getState() as RootState;
-
+    const currentPageObjLibrary = selectLastElementLibrary(state);
     const { locators, maxGenerationTime, generateXpath, generateCssSelector, generateMissingLocator } = meta;
-    const filter = selectClassFilterByPO(state);
 
-    const toGenerateXpaths = maxGenerationTime
-      ? locators
-      : generateMissingLocator || generateXpath
-      ? filterLocatorsByClassFilter(locators, filter).filter(
+    const filter = getLocalStorage(LocalStorageKey.Filter)[currentPageObjLibrary ?? ""];
+
+    const getXpathsForGeneration = (): Locator[] => {
+      if (maxGenerationTime) {
+        return locators;
+      } else if (generateMissingLocator || generateXpath) {
+        return filterLocatorsByClassFilter(locators, filter).filter(
           ({ locator }) => !locator || !locator.xPath || locator.xPath === locator.fullXpath || !locator.fullXpath
-        )
-      : [];
+        );
+      } else {
+        return [];
+      }
+    };
+
+    const toGenerateXpaths: Locator[] = getXpathsForGeneration();
+
+    console.log("toGenerateXpaths", toGenerateXpaths);
 
     const toGenerateCss =
       generateMissingLocator || generateCssSelector
@@ -43,6 +52,11 @@ export const runLocatorsGeneration = createAsyncThunk(
         : [];
 
     const generations = Promise.all([
+      ...[toGenerateXpaths.length ? runXpathGeneration(state, toGenerateXpaths, maxGenerationTime) : null],
+      ...[toGenerateCss.length ? runCssSelectorGeneration(toGenerateCss) : null],
+    ]);
+
+    console.log([
       ...[toGenerateXpaths.length ? runXpathGeneration(state, toGenerateXpaths, maxGenerationTime) : null],
       ...[toGenerateCss.length ? runCssSelectorGeneration(toGenerateCss) : null],
     ]);
