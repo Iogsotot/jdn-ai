@@ -13,7 +13,7 @@ import { updateMessageHandler } from '../../pageServices/scriptMessageHandler';
 
 import { updateSocketMessageHandler } from '../../services/webSocketMessageHandler';
 
-import { logger } from './middlewares/logger';
+// import { logger } from './middlewares/logger';
 import { changePageMiddleware } from './middlewares/changePage.middleware';
 import { shouldRunGeneration } from '../../features/locators/reducers/shouldRunGeneration.middleware';
 import { cancellableActions } from '../../common/components/notification/middlewares/cancellableActions';
@@ -21,6 +21,10 @@ import { cancellableActions } from '../../common/components/notification/middlew
 import { onLocatorsCreated } from '../../features/locators/reducers/identifyElements.thunk';
 
 import { quitThrottlerMiddleware } from '../../common/utils/throttler';
+
+import { createLogger } from 'redux-logger';
+
+const logger = createLogger();
 
 const rootReducer = {
   main: mainSlice,

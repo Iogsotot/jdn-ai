@@ -51,6 +51,8 @@ export const updateMessageHandler = (
       copyLocator(framework, value, pageObjectName, option)();
     },
     [ScriptMsg.ElementSelect]: (payload) => {
+      console.log('%cpage service script message handler: ', 'background-color: alice', payload.element_id);
+
       dispatch(elementSetActive(payload.element_id));
     },
     [ScriptMsg.ElementGroupSetActive]: (payload) => {
@@ -76,6 +78,7 @@ export const updateMessageHandler = (
           locatorValue: { ...locatorValue, cssSelectorStatus: LocatorTaskStatus.SUCCESS },
         };
       });
+      console.log('+++++++++ script message: ', locators, payload);
       const pageObject = selectCurrentPageObject(state)!;
       dispatch(updateLocatorGroup({ locators, pageObject }));
     },

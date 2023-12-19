@@ -43,6 +43,8 @@ class Throttler {
 export const throttler = new Throttler();
 
 export const quitThrottlerMiddleware: Middleware = (store) => (next) => (action) => {
+  // console.log('%cThrottler:', 'font-size: 24px', action);
+
   const result = next(action);
 
   switch (action.type) {

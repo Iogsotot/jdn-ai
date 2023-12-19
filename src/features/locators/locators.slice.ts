@@ -126,10 +126,14 @@ const locatorsSlice = createSlice({
     ) {
       const locators = Array.isArray(payload) ? payload : payload.locators;
       const newValue = locators.map(({ element_id }) => ({ element_id, active: false }));
+      console.log('%cnewValue', 'color: red', newValue, locators);
+
       locatorsAdapter.upsertMany(state, newValue as ILocator[]);
     },
     elementSetActive(state, { payload }: PayloadAction<ILocator>) {
-      locatorsAdapter.upsertOne(state, { element_id: payload.element_id, active: true } as ILocator);
+      console.log('%celementSetActive payload 2: ', 'font-size: 24px', payload);
+
+      locatorsAdapter.upsertOne(state, { element_id: payload.element_id ?? payload, active: true } as ILocator);
     },
     elementUnsetActive(state, { payload }: PayloadAction<ElementId>) {
       locatorsAdapter.upsertOne(state, { element_id: payload, active: false } as ILocator);
@@ -291,6 +295,8 @@ const locatorsSlice = createSlice({
       }>,
     ) {
       const { locators, pageObject } = payload;
+      console.log('||||||||||||||||||| locators: ', locators, payload);
+
       const newValue = locators.map(({ element_id, jdnHash, locatorValue }) => {
         const existingLocator = element_id
           ? simpleSelectLocatorById(state, element_id)
@@ -307,14 +313,14 @@ const locatorsSlice = createSlice({
   },
   extraReducers: (builder) => {
     addCustomLocatorReducer(builder),
-    changeLocatorElementReducer(builder),
-    checkLocatorsValidityReducer(builder),
-    identifyElementsReducer(builder),
-    createLocatorsReducer(builder),
-    rerunGenerationReducer(builder),
-    stopGenerationReducer(builder),
-    stopGenerationGroupReducer(builder),
-    runLocatorsGenerationReducer(builder);
+      changeLocatorElementReducer(builder),
+      checkLocatorsValidityReducer(builder),
+      identifyElementsReducer(builder),
+      createLocatorsReducer(builder),
+      rerunGenerationReducer(builder),
+      stopGenerationReducer(builder),
+      stopGenerationGroupReducer(builder),
+      runLocatorsGenerationReducer(builder);
   },
 });
 

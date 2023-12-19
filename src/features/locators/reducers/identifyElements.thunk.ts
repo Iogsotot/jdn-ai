@@ -74,6 +74,8 @@ export const onLocatorsCreated: Middleware = (store) => (next) => (action) => {
   const state = store.getState();
   if (action.type === createLocators.fulfilled.type) {
     const locators = action.payload;
+    console.log('%cidentify elements: ', 'font-size: 24px', locators);
+
     const { generateXpath } = selectAutoGeneratingLocatorTypes(state as RootState, locators);
     // generateCssSelector: false because it's run with attributes generation for performance reasons
     // ToDo: take generateCssSelector from selectAutoGeneratingLocatorTypes, when backend will be ready

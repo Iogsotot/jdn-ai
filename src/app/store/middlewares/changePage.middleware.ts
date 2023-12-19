@@ -18,6 +18,7 @@ export const changePageMiddleware: Middleware = (store) => (next) => (action) =>
       );
       break;
   }
+  console.log('changePageMiddleware ', action.type, action.payload);
 
   return result;
 };

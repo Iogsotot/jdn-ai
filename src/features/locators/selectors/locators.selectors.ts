@@ -7,13 +7,25 @@ import { selectCurrentPageObject } from '../../pageObjects/selectors/pageObjects
 import { getTaskStatus } from '../utils/utils';
 
 export const locatorsAdapter = createEntityAdapter<ILocator>({
-  selectId: (locator) => locator.element_id,
+  selectId: (locator) => {
+    console.log('%cLogging locator in selectId:', 'font: 16px sans-serif', locator);
+
+    return locator.element_id;
+  },
 });
 
-const { selectAll, selectById } = locatorsAdapter.getSelectors<RootState>((state) => state.locators.present);
+const { selectAll, selectById } = locatorsAdapter.getSelectors<RootState>((state) => {
+  // console.log('state ', state.locators.present);
+  // console.log(state);
+
+  return state.locators.present;
+});
 
 export const selectLocatorById = createSelector(selectById, (_item?: ILocator) => {
+  // console.log('%cGet task status selectLocatorById', 'font: 16px sans-serif', _item);
   if (_item) {
+    if (!_item.element_id) console.log('%cGet task status selectLocatorById', 'font: 16px sans-serif', _item);
+
     return {
       ..._item,
       locatorValue: {
@@ -26,8 +38,11 @@ export const selectLocatorById = createSelector(selectById, (_item?: ILocator) =
   return _item;
 });
 
-export const selectLocators = createSelector(selectAll, (items: ILocator[]) =>
-  items.map((_item) => {
+export const selectLocators = createSelector(selectAll, (items: ILocator[]) => {
+  // console.log('selectLocators: items', items);
+  return items.map((_item) => {
+    if (!_item.element_id) console.log('%cGet task status selectLocators', 'font: bold 20px sans-serif', _item);
+
     return {
       ..._item,
       locatorValue: {
@@ -36,8 +51,8 @@ export const selectLocators = createSelector(selectAll, (items: ILocator[]) =>
         taskStatus: getTaskStatus(_item.locatorValue),
       },
     };
-  }),
-);
+  });
+});
 
 export const selectLocatorsToGenerate = createSelector(selectLocators, (items: ILocator[]) =>
   items.filter((el) => el.isChecked && !el.deleted),
@@ -78,7 +93,12 @@ export const areChildrenChecked = createSelector(
 );
 
 export const selectLocatorByJdnHash = createSelector(
-  (state: RootState, jdnHash: string) => selectLocators(state).filter((loc) => loc.jdnHash === jdnHash),
+  (state: RootState, jdnHash: string) => {
+    // console.log('%cselectLocatorByJdnHash', 'font: 1.3rem "Fira Sans"', state);
+    // console.log(selectLocators(state).filter((loc) => loc.jdnHash === jdnHash));
+
+    return selectLocators(state).filter((loc) => loc.jdnHash === jdnHash);
+  },
   (state: RootState) => selectCurrentPageObject(state)?.locators,
   (locators, pageObjLocators) => {
     return locators.find(({ element_id }) => pageObjLocators?.includes(element_id));

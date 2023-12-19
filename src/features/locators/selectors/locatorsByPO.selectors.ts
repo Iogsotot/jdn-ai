@@ -32,6 +32,8 @@ export const selectPresentLocatorsByPO = createSelector(
     isNil(pageObjId) ? selectCurrentPageObject(state) : selectPageObjById(state, pageObjId),
   (locators, pageObject) => {
     const locByPageObj = pageObject?.locators || [];
+    console.log('*****************************locators: ', locators);
+    
     return locators
       .filter((locator) => locByPageObj.includes(locator.element_id))
       .map((locator) => {

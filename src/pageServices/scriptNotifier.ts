@@ -76,6 +76,7 @@ const notify = (state: RootState, action: any, prevState: RootState) => {
     case 'locators/elementSetActive':
     case 'locators/setActiveSingle': {
       const locators = selectPresentLocatorsByPO(state);
+      console.log('++++++++++++ script notifier: ', locators);
       locators && sendMessage.toggleActiveGroup(locators);
       break;
     }

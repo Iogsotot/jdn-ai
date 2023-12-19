@@ -6,10 +6,13 @@ import { selectLocatorsByPageObject } from '../selectors/locatorsByPO.selectors'
 import { AUTO_GENERATION_THRESHOLD } from '../utils/constants';
 
 const onSetActiveGroup = (dispatch: any, locators: ILocator[]) => {
-  const noLocators = getNoLocatorsElements(locators);
+  const noLocators: ILocator[] = getNoLocatorsElements(locators);
+  console.log('%conSetActiveGroup: ', 'background-color: light-green', noLocators, locators);
+
   if (noLocators.length) {
+    console.log('onSetActiveGroup no locators:', noLocators);
+
     dispatch(
-      // @ts-ignore
       runLocatorsGeneration({
         locators: noLocators,
         generateMissingLocator: true,
@@ -21,6 +24,7 @@ const onSetActiveGroup = (dispatch: any, locators: ILocator[]) => {
 export const shouldRunGeneration: Middleware = (store) => (next) => (action) => {
   const { type, payload, meta } = action;
   const state = store.getState();
+  console.log(type);
 
   switch (type) {
     case 'locators/setElementGroupGeneration': {
@@ -37,11 +41,16 @@ export const shouldRunGeneration: Middleware = (store) => (next) => (action) => 
     case 'locators/setActiveSingle':
     case 'locators/elementSetActive': {
       const noLocators = !hasAllLocators(payload);
+      console.log('%celementSetActive', 'background-color: yellow', payload, type);
+      console.log('NOLOCATORS: ', noLocators);
+
       if (noLocators) {
+        console.log('%clocators/elementSetActive: ', 'background-color: orange', payload);
+
         store.dispatch(
           // @ts-ignore
           runLocatorsGeneration({
-            locators: [payload as ILocator],
+            locators: [payload],
             generateMissingLocator: true,
           }),
         );

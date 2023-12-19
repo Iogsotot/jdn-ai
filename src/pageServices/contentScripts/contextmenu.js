@@ -529,6 +529,10 @@ export const runContextMenu = () => {
         },
       },
     }));
+
+    console.log('context menu:', ...items);
+    console.log('predictedElements: ', predictedElements);
+
     return items;
   };
 

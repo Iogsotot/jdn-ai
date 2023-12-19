@@ -126,10 +126,13 @@ export const getGenerationAttributes = () => {
   };
 
   const generateSelectorGroupByHash = (elements) => {
+    console.log('EEEEEEEEEEEEEEEEEEEEEEEEEE elements:', elements);
+    const jdnHashSaver = elements[0].slice(0, -2);
     return elements.map(({ element_id, jdnHash }) => {
-      const element = document.querySelector(`[jdn-hash='${jdnHash}']`);
+      const element = document.querySelector(`[jdn-hash='${jdnHash ?? jdnHashSaver}']`);
+      console.log('AAAAAAAAAAAAAAAAAAA document query: ', element, element_id, elements[0]);
       return {
-        element_id,
+        element_id: element_id ?? elements[0],
         locatorValue: {
           cssSelector: element ? generateSelectorByElement(element) : null,
         },
@@ -204,6 +207,7 @@ export const getGenerationAttributes = () => {
       case ScriptMsg.GenerateSelectorGroupByHash: {
         if (param.fireCallbackMessage) {
           const res = generateSelectorGroupByHash(param.elements);
+          console.log('0-0-0-0-0-0-0-0-0 res:', res, param);
           sendMessage({ message: ScriptMsg.ResponseCssSelectors, param: res });
         } else sendResponse(generateSelectorGroupByHash(param.elements));
         break;

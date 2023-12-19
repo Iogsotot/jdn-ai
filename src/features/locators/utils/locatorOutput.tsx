@@ -35,6 +35,7 @@ export const getLocatorValueByType = (locatorValue: LocatorValue, type: LocatorT
   let dataAttribute = '';
 
   const value = {
+    // cssSelector: locatorValue.cssSelector || CALCULATING,
     'CSS Selector': locatorValue.cssSelector || CALCULATING,
     xPath: locatorValue.xPath ?? '',
     id: locatorValue.attributes.id ?? '',

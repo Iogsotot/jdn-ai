@@ -50,13 +50,20 @@ export const updateSocketMessageHandler = (dispatch: any, state: any) => {
 
         if (status === LocatorTaskStatus.REVOKED || status === LocatorTaskStatus.FAILURE) {
           const pageObject = selectCurrentPageObject(state)!;
-          dispatch(updateLocatorGroup({ locators: [{ jdnHash, locatorValue: { xPathStatus: status } }], pageObject }));
+          dispatch(
+            updateLocatorGroup({
+              locators: [{ jdnHash, locatorValue: { xPathStatus: status }, element_id: element.element_id }],
+              pageObject,
+            }),
+          );
         }
 
         break;
       }
       case 'result_ready': {
         const onStatusChange = (payload: any[]) => {
+          console.log(' *********** result_ready', payload);
+
           const locators = payload.map((_payload) => {
             const { id, result: xPath } = _payload;
             return {

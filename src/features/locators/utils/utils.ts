@@ -251,7 +251,10 @@ export const getTaskStatus = (locatorValue: LocatorValue) => {
   return xPathStatus || cssSelectorStatus;
 };
 
-export const hasAllLocators = ({ locatorValue }: ILocator) =>
-  locatorValue && locatorValue.xPath !== locatorValue.fullXpath && locatorValue.cssSelector;
+export const hasAllLocators = ({ locatorValue }: ILocator) => {
+  // console.log('hasAllLocators: ', locatorValue);
+
+  return locatorValue && locatorValue.xPath !== locatorValue.fullXpath && locatorValue.cssSelector;
+};
 
 export const getNoLocatorsElements = (locators: ILocator[]) => locators.filter((locator) => !hasAllLocators(locator));
