@@ -9,10 +9,12 @@ export const findBySelectors = () => {
   // elements with conflicted labels
   const conflictLabels: Element[] = [];
 
-  const generateUUID = () =>
-    Math.random().toString().substring(2, 12) +
-    Date.now().toString().substring(5) +
-    Math.random().toString().substring(2, 12);
+  const generateUUID = (): string =>
+    `${
+      Math.random().toString().substring(2, 12) +
+      Date.now().toString().substring(5) +
+      Math.random().toString().substring(2, 12)
+    }`;
 
   const removeLabels = () => {
     const elements = document.querySelectorAll(`[${JDN_LABEL}]`);

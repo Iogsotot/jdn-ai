@@ -33,11 +33,11 @@ export const findSubstringWithinTerms = (
 };
 
 export const generateId = (): string => {
-  return (
+  return `${
     Math.random().toString().substring(2, 12) +
     Date.now().toString().substring(5) +
     Math.random().toString().substring(2, 12)
-  );
+  }`;
 };
 
 export const getElementFullXpath = async (foundHash: string): Promise<string> => {
