@@ -1,27 +1,47 @@
 import { ScriptMsg } from '../scriptMsg.constants';
 
+const hashAttribute = 'jdn-hash';
+const DOMElementIndexAttribute = 'jdn-DOMI';
+
+function findParentZIndex(element) {
+  while (element && element !== document) {
+    const zIndex = window.getComputedStyle(element).getPropertyValue('z-index');
+    if (zIndex !== 'auto' && zIndex !== '') {
+      return zIndex;
+    }
+    element = element.parentElement;
+  }
+  return 'auto';
+}
+
+const child2 = document.querySelector('child2');
+const zIndex = findParentZIndex(child2);
+
 export const pageData = () => {
   const getPageData = () => {
     chrome.runtime.sendMessage({ message: ScriptMsg.StartCollectData }).catch((error) => {
       if (error.message !== 'The message port closed before a response was received.') throw new Error(error.message);
     });
 
-    const hashAttribute = 'jdn-hash';
-    function gen_uuid(e) {
+    function gen_uuid(e, DOMindex, elementZindex) {
       let hashValue = e.getAttribute(hashAttribute);
       if (!hashValue) {
-        hashValue =
+        hashValue = `${
           Math.random().toString().substring(2, 12) +
           Date.now().toString().substring(5) +
-          Math.random().toString().substring(2, 12);
+          Math.random().toString().substring(2, 12)
+        }`;
+        const calculatedLayer = parseInt(DOMindex) + parseInt(isNaN(elementZindex) ? 0 : elementZindex);
+        e.setAttribute(DOMElementIndexAttribute, calculatedLayer);
         e.setAttribute(hashAttribute, hashValue);
       }
       return e;
     }
 
     function assign_uuid() {
-      [...document.querySelectorAll('*:not([id^="jdn-overlay"])')].forEach((el) => {
-        gen_uuid(el);
+      [...document.querySelectorAll('*:not([id^="jdn-overlay"])')].forEach((el, i) => {
+        const elementZindex = findParentZIndex(el);
+        gen_uuid(el, i, elementZindex);
       });
     }
 

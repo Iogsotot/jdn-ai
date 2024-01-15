@@ -7,6 +7,7 @@ import { assignJdnHash } from './utils';
 import { LocatorTaskStatus, LocatorElementStatus } from '../../features/locators/types/locator.types';
 
 const ADD_ELEMENT_TO_PO = 'To get data add element to Page Object';
+const JDN_HASH = 'jdn-hash';
 
 /* global chrome */
 export const highlightOnPage = () => {
@@ -161,12 +162,12 @@ export const highlightOnPage = () => {
     if (active) scrollToElement(active.jdnHash);
   };
 
-  const drawRectangle = (elementRect, predictedElement) => {
+  const drawRectangle = (elementRect, predictedElement, elementIndex) => {
     const { element_id, jdnHash } = predictedElement;
-    const getDivPosition = (elementRect) => {
-      const { top, left, height, width } = elementRect || {};
+    const getDivPosition = (elementRectData) => {
+      const { top, left, height, width } = elementRectData || {};
 
-      return elementRect
+      return elementRectData
         ? {
             left: `${left + window.pageXOffset + document.body.scrollLeft}px`,
             top: `${top + window.pageYOffset + document.body.scrollTop}px`,
@@ -175,6 +176,7 @@ export const highlightOnPage = () => {
           }
         : {};
     };
+
     const addTooltip = () => {
       if (tooltip) return;
       tooltip = document.createElement('div');
@@ -236,10 +238,12 @@ export const highlightOnPage = () => {
       tooltip.setAttribute('jdn-element-hash', el.element_id);
     };
 
+    // Create jdn highlight rectangle:
     const div = document.createElement('div');
     div.id = jdnHash;
     div.className = getClassName(predictedElement);
     div.setAttribute('jdn-highlight', true);
+    div.style.zIndex = parseInt(elementIndex, 10);
     div.setAttribute('jdn-status', predictedElement.locatorValue.taskStatus || LocatorTaskStatus.STARTED);
     div.addEventListener('mouseover', () => {
       tooltipTimer = setTimeout(() => {
@@ -270,7 +274,7 @@ export const highlightOnPage = () => {
   const clearContainer = (container) => {
     nodes.forEach((node) => {
       if (container.contains(node)) {
-        const jdnHash = node.getAttribute('jdn-hash');
+        const jdnHash = node.getAttribute(JDN_HASH);
         const div = document.getElementById(jdnHash);
         if (div) div.remove();
       }
@@ -301,15 +305,16 @@ export const highlightOnPage = () => {
       const elementRect = element.getBoundingClientRect();
       if (isInViewport(elementRect) && !isHiddenByOverflow(element, elementRect)) {
         const hash = element.getAttribute('jdn-hash');
+        const elementIndex = element.getAttribute('jdn-DOMI');
         const highlightElement = document.getElementById(hash);
         const predicted = predictedElements.find((e) => e.jdnHash === hash);
         if (!highlightElement) {
-          drawRectangle(elementRect, predicted);
+          drawRectangle(elementRect, predicted, elementIndex);
         } else {
           const highlightElementRect = highlightElement.getBoundingClientRect();
           if (JSON.stringify(elementRect) !== JSON.stringify(highlightElementRect)) {
             highlightElement.remove();
-            drawRectangle(elementRect, predicted);
+            drawRectangle(elementRect, predicted, elementIndex);
           }
         }
       }
