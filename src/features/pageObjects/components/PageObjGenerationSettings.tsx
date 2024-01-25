@@ -2,30 +2,20 @@ import React, { useEffect, useRef } from 'react';
 import { Col, Row, Select, Space, Typography } from 'antd';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectCurrentPageObject, selectPageObjects } from '../selectors/pageObjects.selectors';
-import { AppDispatch, RootState } from '../../../app/store/store';
-import {
-  changeElementLibrary,
-  setHideUnadded,
-  setLocatorType,
-  setAnnotationType,
-  changeFrameworkType,
-} from '../pageObject.slice';
+import { AppDispatch } from '../../../app/store/store';
+import { changeElementLibrary, setLocatorType, setAnnotationType, changeFrameworkType } from '../pageObject.slice';
 import { PageObjectId } from '../types/pageObjectSlice.types';
 import { ElementLibrary, libraryNames } from '../../locators/types/generationClasses.types';
-import { identifyElements } from '../../locators/reducers/identifyElements.thunk';
 import { LocatorType, FrameworkType, AnnotationType } from '../../../common/types/common';
 import { LocalStorageKey, setLocalStorage } from '../../../common/utils/localStorage';
 import { Footnote } from '../../../common/components/footnote/Footnote';
-import { isIdentificationLoading } from '../../locators/utils/helpers';
-import { PageObjGenerationButton } from './PageObjGenerationButton';
 import { IN_DEVELOPMENT_TITLE } from '../../../common/constants/constants';
 
 import { useOnboardingContext } from '../../onboarding/OnboardingProvider';
 import { OnboardingStep } from '../../onboarding/constants';
-import { useOnboarding } from '../../onboarding/useOnboarding';
-import { resetProgressBar, startProgressBar } from '../progressBar.slice';
+
 import { selectIsPageObjectsListUIEnabled } from '../selectors/pageObjectsListUI.selectors';
-import { disablePageObjectsListUI } from '../pageObjectsListUI.slice';
+import PageObjGenerationButtonsControlPanel from './PageObjGenerationButtonsControlPanel';
 
 interface Props {
   pageObj: PageObjectId;
@@ -97,34 +87,15 @@ const locatorTypeOptions = [
 ];
 
 export const PageObjGenerationSettings: React.FC<Props> = ({ pageObj, library, url }) => {
-  const status = useSelector((state: RootState) => state.locators.present.status);
   const currentPageObject = useSelector(selectCurrentPageObject);
   const pageObjects = useSelector(selectPageObjects);
 
-  const { isOnboardingOpen, handleOnChangeStep } = useOnboarding();
-
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleGenerate = () => {
-    if (isOnboardingOpen) handleOnChangeStep(OnboardingStep.Generating);
-    dispatch(setHideUnadded({ id: pageObj, hideUnadded: false }));
-    dispatch(identifyElements({ library, pageObj }));
-    // disable UI for PageObjList settings:
-    dispatch(disablePageObjectsListUI());
-    // reset to default progress bar:
-    dispatch(resetProgressBar());
-    // show and start progress bar:
-    dispatch(startProgressBar());
-  };
-
   const refSettings = useRef<HTMLElement | null>(null);
-  const generationButtonRef = useRef<HTMLElement | null>(null);
   const { updateStepRefs } = useOnboardingContext();
 
   useEffect(() => {
-    if (generationButtonRef.current) {
-      updateStepRefs(OnboardingStep.Generate, generationButtonRef, handleGenerate);
-    }
     if (refSettings.current) {
       updateStepRefs(OnboardingStep.POsettings, refSettings);
     }
@@ -159,15 +130,6 @@ export const PageObjGenerationSettings: React.FC<Props> = ({ pageObj, library, u
     dispatch(setLocatorType({ id: pageObj, locatorType }));
     setLocalStorage(LocalStorageKey.LocatorType, locatorType);
   };
-
-  const handleEmptyPO = () => {
-    dispatch(setHideUnadded({ id: pageObj, hideUnadded: true }));
-    dispatch(identifyElements({ library, pageObj }));
-  };
-
-  const isLoading = () => isIdentificationLoading(status) && currentPageObject?.id === pageObj;
-  const isGenerateAllLoading = () => isLoading() && !currentPageObject?.hideUnadded;
-  const isGenerateEmptyLoading = () => isLoading() && currentPageObject?.hideUnadded;
 
   const isPageObjectsListUIEnabled = useSelector(selectIsPageObjectsListUIEnabled);
 
@@ -242,32 +204,7 @@ export const PageObjGenerationSettings: React.FC<Props> = ({ pageObj, library, u
             </Col>
           </Row>
         </Space>
-        <div
-          ref={generationButtonRef as React.LegacyRef<HTMLDivElement>}
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginTop: '16px',
-            width: '275px',
-          }}
-        >
-          <PageObjGenerationButton
-            type="primary"
-            loading={isGenerateAllLoading()}
-            onClick={handleGenerate}
-            disabled={!isPageObjectsListUIEnabled}
-          >
-            Generate All
-          </PageObjGenerationButton>
-          <PageObjGenerationButton
-            loading={isGenerateEmptyLoading()}
-            onClick={handleEmptyPO}
-            disabled={isOnboardingOpen || !isPageObjectsListUIEnabled}
-          >
-            Empty Page Object
-          </PageObjGenerationButton>
-        </div>
+        <PageObjGenerationButtonsControlPanel pageObjectId={pageObj} library={library} />
       </div>
     </div>
   );

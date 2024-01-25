@@ -178,7 +178,7 @@ export const LocatorsPage = () => {
 
   const renderBackButton = () => {
     return (
-      <Button onClick={backButtonHandler} className="jdn__buttons">
+      <Button danger onClick={backButtonHandler} className="jdn__buttons">
         Back
       </Button>
     );
