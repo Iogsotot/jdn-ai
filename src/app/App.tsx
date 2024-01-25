@@ -22,6 +22,7 @@ import { isPageObjectPage } from './utils/helpers';
 import './styles/index.less';
 import { Onboarding, useOnboarding } from '../features/onboarding/useOnboarding';
 import { OnboardingProvider, useOnboardingContext } from '../features/onboarding/OnboardingProvider';
+import PageObjGenerationButtonsControlPanel from '../features/pageObjects/components/PageObjGenerationButtonsControlPanel';
 
 const App = () => {
   const [jdiTemplate, setJdiTemplate] = useState<Blob | undefined>(undefined);
@@ -58,7 +59,14 @@ const App = () => {
 
   const renderPage = () => {
     const { page } = currentPage;
-    return isPageObjectPage(page) ? <PageObjectPage {...{ jdiTemplate, vividusTemplate }} /> : <LocatorsPage />;
+    return isPageObjectPage(page) ? (
+      <>
+        <PageObjectPage {...{ jdiTemplate, vividusTemplate }} />
+        <PageObjGenerationButtonsControlPanel pageObjectId={pageObj} library={library} />
+      </>
+    ) : (
+      <LocatorsPage />
+    );
   };
 
   const {

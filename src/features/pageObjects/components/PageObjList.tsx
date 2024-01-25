@@ -72,7 +72,7 @@ export const PageObjList: React.FC<Props> = ({ jdiTemplate, vividusTemplate }) =
     if (isPageObjectNotEmpty && isProgressBarFinished && elements.length) {
       return renderLocators(elements, library);
     } else {
-      return <PageObjGenerationSettings pageObj={pageObjId} {...{ library, url }} />;
+      return <PageObjGenerationSettings pageObj={pageObjId} {...{ url }} />;
     }
   };
 

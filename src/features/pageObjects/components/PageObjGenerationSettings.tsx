@@ -15,11 +15,9 @@ import { useOnboardingContext } from '../../onboarding/OnboardingProvider';
 import { OnboardingStep } from '../../onboarding/constants';
 
 import { selectIsPageObjectsListUIEnabled } from '../selectors/pageObjectsListUI.selectors';
-import PageObjGenerationButtonsControlPanel from './PageObjGenerationButtonsControlPanel';
 
 interface Props {
   pageObj: PageObjectId;
-  library: ElementLibrary;
   url: string;
 }
 
@@ -86,7 +84,7 @@ const locatorTypeOptions = [
   },
 ];
 
-export const PageObjGenerationSettings: React.FC<Props> = ({ pageObj, library, url }) => {
+export const PageObjGenerationSettings: React.FC<Props> = ({ pageObj, url }) => {
   const currentPageObject = useSelector(selectCurrentPageObject);
   const pageObjects = useSelector(selectPageObjects);
 
@@ -204,7 +202,6 @@ export const PageObjGenerationSettings: React.FC<Props> = ({ pageObj, library, u
             </Col>
           </Row>
         </Space>
-        <PageObjGenerationButtonsControlPanel pageObjectId={pageObj} library={library} />
       </div>
     </div>
   );
