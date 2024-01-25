@@ -261,6 +261,8 @@ const locatorsSlice = createSlice({
       // ToDo: fix legacy naming
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const { isChecked, element_id } = locator;
+      console.log(payload);
+
       locatorsAdapter.upsertOne(state, { element_id, isChecked: !isChecked } as ILocator);
     },
     toggleAllLocatorsIsChecked(state, { payload }: PayloadAction<{ locators: ILocator[]; isChecked: boolean }>) {
@@ -307,14 +309,14 @@ const locatorsSlice = createSlice({
   },
   extraReducers: (builder) => {
     addCustomLocatorReducer(builder),
-    changeLocatorElementReducer(builder),
-    checkLocatorsValidityReducer(builder),
-    identifyElementsReducer(builder),
-    createLocatorsReducer(builder),
-    rerunGenerationReducer(builder),
-    stopGenerationReducer(builder),
-    stopGenerationGroupReducer(builder),
-    runLocatorsGenerationReducer(builder);
+      changeLocatorElementReducer(builder),
+      checkLocatorsValidityReducer(builder),
+      identifyElementsReducer(builder),
+      createLocatorsReducer(builder),
+      rerunGenerationReducer(builder),
+      stopGenerationReducer(builder),
+      stopGenerationGroupReducer(builder),
+      runLocatorsGenerationReducer(builder);
   },
 });
 

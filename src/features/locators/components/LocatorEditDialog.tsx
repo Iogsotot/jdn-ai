@@ -19,7 +19,7 @@ import {
   LocatorValidationErrorType,
 } from '../types/locator.types';
 
-import { changeLocatorAttributes } from '../locators.slice';
+import { changeLocatorAttributes, toggleLocatorIsChecked } from '../locators.slice';
 import { createNewName, getLocatorValidationStatus, getLocatorValueOnTypeSwitch } from '../utils/utils';
 import { createLocatorValidationRules } from '../utils/locatorValidationRules';
 import { createNameValidationRules } from '../utils/nameValidationRules';
@@ -142,6 +142,8 @@ export const LocatorEditDialog: React.FC<Props> = ({
   };
 
   const handleCreateCustomLocator = async () => {
+    console.log('handleCreateCustomLocator');
+
     const isLocatorFieldTouched = form.isFieldTouched('locator');
     // in case if user didn't touch locator field to avoid forceUpdate
     const locatorMessage = isLocatorFieldTouched ? validationMessage : LocatorValidationWarnings.NotFound;
@@ -167,7 +169,10 @@ export const LocatorEditDialog: React.FC<Props> = ({
       locatorFormValue,
     };
 
-    await dispatch(addCustomLocator({ newLocatorData }));
+    const newLocator: ILocator = await dispatch(addCustomLocator({ newLocatorData }));
+    console.log(newLocator);
+
+    dispatch(toggleLocatorIsChecked(newLocator.element_id));
     closeDialog();
   };
 
